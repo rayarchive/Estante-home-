@@ -8,23 +8,19 @@
 
         body, html {
             margin: 0; padding: 0;
-            background-color: transparent; 
+            /* Cor padrão (Modo Claro) */
+            background-color: #ffffff; 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: white;
             height: 100vh;
             overflow: hidden;
+            transition: background-color 0.3s ease; /* Transição suave ao mudar o modo */
         }
 
-        /* DETECÇÃO DO MODO CLARO/ESCURO DO NOTION */
-        @media (prefers-color-scheme: light) {
-            body, html {
-                color: white; /* Mantém texto branco mesmo no modo claro */
-            }
-        }
-
+        /* Detecta se o dispositivo está no Modo Escuro */
         @media (prefers-color-scheme: dark) {
             body, html {
-                color: white;
+                background-color: #121212; /* Cor para o Modo Escuro */
             }
         }
 
@@ -38,21 +34,22 @@
             padding: 0 20px;
         }
 
-        /* --- TOPO CLÁSSICO RESTAURADO (SEMPRE PRETO) --- */
+        /* --- TOPO CLÁSSICO RESTAURADO --- */
         .shelf-top-crown {
-            width: calc(100% + 40px);
+            width: calc(100% + 30px);
             height: 40px;
-            background: #0d0d0d;
+            background: #161616;
             z-index: 6;
-            border-bottom: 4px solid #1a1a1a;
+            border-bottom: 4px solid ##161616;
             flex-shrink: 0;
             position: relative;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.7);
         }
         .shelf-top-crown::before, .shelf-top-crown::after {
             content: "✦";
             position: absolute;
             top: 50%; transform: translateY(-50%);
-            color: #252525; font-size: 18px;
+            color: #999B9B; font-size: 15px;
         }
         .shelf-top-crown::before { left: 15px; }
         .shelf-top-crown::after { right: 15px; }
@@ -60,20 +57,21 @@
         .shelf-header {
             width: calc(100% + 10px);
             height: 25px;
-            background: #0d0d0d;
+            background: #161616;
             z-index: 5;
-            border-bottom: 6px solid #1a1a1a;
+            border-bottom: 6px solid ##161616;
             flex-shrink: 0;
         }
 
-        /* --- ESTRUTURA DE COLUNAS (GRID) - SEMPRE PRETA --- */
+        /* --- ESTRUTURA DE COLUNAS (GRID) --- */
         .library-container {
             flex: 1;
             width: 100%;
-            background-color: #0d0d0d;
+            background-color: #161616;
             border-left: 10px solid #1a1a1a;
             border-right: 10px solid #1a1a1a;
             display: grid;
+            /* Garante 5 colunas exatamente iguais */
             grid-template-columns: repeat(5, 1fr);
             position: relative;
             overflow: hidden;
@@ -81,6 +79,7 @@
 
         .library-column {
             display: grid;
+            /* Garante 6 prateleiras exatamente iguais */
             grid-template-rows: repeat(6, 1fr);
             border-right: 8px solid #1a1a1a;
             height: 100%;
@@ -98,14 +97,15 @@
             min-height: 0;
         }
 
-        /* --- BASE SÓLIDA (SEMPRE PRETA) --- */
+        /* --- BASE SÓLIDA --- */
         .shelf-footer { 
             width: calc(100% + 20px); 
             height: 60px; 
-            background: #0d0d0d;
-            border-top: 5px solid #1a1a1a;
+            background: #161616;
+            border-top: 5px solid ##161616;
             flex-shrink: 0;
             z-index: 1;
+            box-shadow: 0px -10px 15px rgba(0, 0, 0, 0.5);
         }
 
         /* --- LIVROS --- */
@@ -116,6 +116,7 @@
             transition: transform 0.2s;
             cursor: pointer; 
             flex-shrink: 0;
+            /* Altura baseada na prateleira atual */
             height: 85%;
         }
         .book:hover { transform: scale(1.1) translateY(-5px); z-index: 10; }
@@ -124,92 +125,14 @@
             background: linear-gradient(90deg, #1a1a1a, #2a2a2a, #1a1a1a);
         }
 
-        /* PAINEL ADMIN - ADAPTÁVEL AO MODO */
-        #admin-panel { 
-            display: none; 
-            background: #151515; 
-            padding: 15px; 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            right: 0; 
-            z-index: 1000; 
-            max-height: 80vh; 
-            overflow-y: auto; 
-            text-align: center;
-            border-bottom: 2px solid #333;
-        }
-
-        @media (prefers-color-scheme: light) {
-            #admin-panel {
-                background: #1a1a1a;
-                color: #ffffff;
-            }
-        }
-
-        #secret-btn { 
-            width: 100%; 
-            height: 100%; 
-            opacity: 0; 
-            cursor: pointer; 
-            border: none; 
-            background: transparent;
-        }
-
-        .input-group { 
-            display: flex; 
-            gap: 8px; 
-            margin-bottom: 8px; 
-            justify-content: center; 
-            flex-wrap: wrap; 
-        }
-
-        input, select { 
-            padding: 8px; 
-            background: #222; 
-            border: 1px solid #444; 
-            color: #eee; 
-            border-radius: 4px; 
-        }
-
-        @media (prefers-color-scheme: light) {
-            input, select {
-                background: #2a2a2a;
-                border: 1px solid #555;
-                color: #ffffff;
-            }
-        }
-
-        .btn { 
-            border: none; 
-            padding: 8px 15px; 
-            cursor: pointer; 
-            color: white; 
-            border-radius: 4px; 
-            font-weight: bold; 
-        }
-        .btn-add { background: #388E3C; }
-        .btn-add:hover { background: #2E7D32; }
-
-        #backupArea { 
-            width: 90%; 
-            height: 60px; 
-            background: #000; 
-            color: #0f0; 
-            margin: 10px auto; 
-            display: block;
-            border: 1px solid #333;
-            padding: 8px;
-            font-family: monospace;
-        }
-
-        @media (prefers-color-scheme: light) {
-            #backupArea {
-                background: #1a1a1a;
-                color: #00ff00;
-                border: 1px solid #444;
-            }
-        }
+        /* PAINEL (Mantido) */
+        #admin-panel { display: none; background: #161616; padding: 15px; position: fixed; top: 0; left: 0; right: 0; z-index: 1000; max-height: 80vh; overflow-y: auto; text-align: center; }
+        #secret-btn { width: 100%; height: 100%; opacity: 0; cursor: pointer; border: none; }
+        .input-group { display: flex; gap: 8px; margin-bottom: 8px; justify-content: center; flex-wrap: wrap; }
+        input, select { padding: 8px; background: #222; border: 1px solid #444; color: #eee; border-radius: 4px; }
+        .btn { border:none; padding:8px 15px; cursor:pointer; color:white; border-radius:4px; font-weight:bold; }
+        .btn-add { background:#388E3C; }
+        #backupArea { width: 90%; height: 60px; background: #000; color: #0f0; margin: 10px auto; display: block; }
     </style>
 </head>
 <body>
@@ -228,11 +151,11 @@
         <div class="input-group">
             <button class="btn btn-add" onclick="addBook()">Adicionar</button>
             <button class="btn" style="background:#555" onclick="removeLast()">Desfazer</button>
-            <button class="btn" style="background:#D32F2F" onclick="togglePanel()">Fechar</button>
+            <button class="btn" style="background:#161616" onclick="togglePanel()">Fechar</button>
         </div>
         <textarea id="backupArea"></textarea>
-        <button class="btn" style="background:#1976D2" onclick="generateBackup()">Gerar Backup</button>
-        <button class="btn" style="background:#7B1FA2" onclick="restoreBackup()">Restaurar</button>
+        <button class="btn" style="background:#161616" onclick="generateBackup()">Gerar Backup</button>
+        <button class="btn" style="background:#161616" onclick="restoreBackup()">Restaurar</button>
     </div>
 
     <div class="furniture-wrapper">

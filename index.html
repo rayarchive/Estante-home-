@@ -2,198 +2,157 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Estante Organizada - Estilo Clássico</title>
+    <title>Estante Clássica - Visual Restaurado</title>
     <style>
-        /* --- ESTILO GERAL --- */
-        body {
+        * { box-sizing: border-box; }
+
+        body, html {
             margin: 0; padding: 0;
             background-color: transparent; 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: white;
+            height: 100vh;
+            overflow: hidden;
         }
 
         .furniture-wrapper {
             width: 100%;
-            max-width: 1500px;
-            margin: 30px auto;
+            height: 100vh;
             display: flex;
             flex-direction: column;
-            position: relative; 
-        }
-
-        /* --- NOVO TOPO CLÁSSICO (CORNISA) --- */
-        .shelf-header {
-            width: calc(100% + 40px);
-            height: 60px;
-            background: #1a1a1a;
-            margin-left: -20px;
+            align-items: center;
             position: relative;
-            z-index: 5;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-            /* Simulação de moldura clássica */
-            border-top: 4px solid #252525;
-            border-bottom: 8px solid #0d0d0d;
-            border-radius: 4px 4px 0 0;
+            padding: 0 20px;
         }
 
-        /* Detalhes de entalhe nas pontas do topo */
-        .shelf-header::before, .shelf-header::after {
+        /* --- TOPO CLÁSSICO RESTAURADO --- */
+        .shelf-top-crown {
+            width: calc(100% + 40px);
+            height: 40px;
+            background: #0d0d0d;
+            z-index: 6;
+            border-bottom: 4px solid #1a1a1a;
+            flex-shrink: 0;
+            position: relative;
+        }
+        .shelf-top-crown::before, .shelf-top-crown::after {
             content: "✦";
             position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #333;
-            font-size: 25px;
-            opacity: 0.5;
+            top: 50%; transform: translateY(-50%);
+            color: #252525; font-size: 18px;
         }
-        .shelf-header::before { left: 25px; }
-        .shelf-header::after { right: 25px; }
+        .shelf-top-crown::before { left: 15px; }
+        .shelf-top-crown::after { right: 15px; }
 
-        /* --- A ESTRUTURA (CORPO) --- */
+        .shelf-header {
+            width: calc(100% + 10px);
+            height: 25px;
+            background: #0d0d0d;
+            z-index: 5;
+            border-bottom: 6px solid #1a1a1a;
+            flex-shrink: 0;
+        }
+
+        /* --- ESTRUTURA DE COLUNAS (GRID) --- */
         .library-container {
-            display: flex;
+            flex: 1;
             width: 100%;
-            background-color: #1a1a1a; /* Moldura lateral */
-            padding: 0 15px; /* Espessura das colunas laterais */
-            box-sizing: border-box;
+            background-color: #0d0d0d;
+            border-left: 10px solid #1a1a1a;
+            border-right: 10px solid #1a1a1a;
+            display: grid;
+            /* Garante 5 colunas exatamente iguais */
+            grid-template-columns: repeat(5, 1fr);
             position: relative;
-        }
-
-        .library-grid {
-            display: flex;
-            width: 100%;
-            background-color: #0d0d0d; 
-            border-left: 4px solid #111;
-            border-right: 4px solid #111;
-            box-sizing: border-box; 
-            position: relative;
-            z-index: 2;
+            overflow: hidden;
         }
 
         .library-column {
-            width: 20%; 
-            flex-shrink: 0; 
-            border-right: 10px solid #1a1a1a; 
-            display: flex;
-            flex-direction: column;
-            box-sizing: border-box;
+            display: grid;
+            /* Garante 6 prateleiras exatamente iguais */
+            grid-template-rows: repeat(6, 1fr);
+            border-right: 8px solid #1a1a1a;
+            height: 100%;
         }
-        
         .library-column:last-child { border-right: none; }
 
         .shelf-row {
-            height: 120px; 
-            border-bottom: 12px solid #252525; /* Prateleira mais grossa */
             display: flex; 
             align-items: flex-end; 
-            padding: 0 4px;
-            background: linear-gradient(to bottom, #050505, #121212); 
+            padding: 0 2px;
+            background: #0d0d0d;
+            border-bottom: 10px solid #1a1a1a;
             position: relative;
-            overflow: hidden; 
+            overflow: hidden;
+            min-height: 0;
         }
 
-        /* --- NOVA BASE SÓLIDA --- */
+        /* --- BASE SÓLIDA --- */
         .shelf-footer { 
             width: calc(100% + 20px); 
-            height: 70px; 
-            background: #1a1a1a;
-            margin-left: -10px;
-            margin-top: -2px;
-            position: relative;
+            height: 60px; 
+            background: #0d0d0d;
+            border-top: 5px solid #1a1a1a;
+            flex-shrink: 0;
             z-index: 1;
-            border-top: 5px solid #252525;
-            box-shadow: 0 -5px 15px rgba(0,0,0,0.3);
-            border-radius: 0 0 4px 4px;
-        }
-
-        /* Botão secreto agora fica na base */
-        #secret-btn { 
-            width: 100%; 
-            height: 100%; 
-            opacity: 0; 
-            cursor: pointer; 
-            border: none; 
-            background: transparent; 
         }
 
         /* --- LIVROS --- */
         .book {
             margin-right: 1px;
             background-size: 100% 100%;
-            background-position: center;
             box-shadow: 1px 0 3px rgba(0,0,0,0.8);
             transition: transform 0.2s;
             cursor: pointer; 
-            position: relative;
-            flex-shrink: 0; 
+            flex-shrink: 0;
+            /* Altura baseada na prateleira atual */
+            height: 85%;
         }
-        .book:hover { transform: scale(1.08) translateY(-8px); z-index: 10; }
+        .book:hover { transform: scale(1.1) translateY(-5px); z-index: 10; }
         .book-filler {
-            opacity: 0.4;
+            opacity: 0.3;
             background: linear-gradient(90deg, #1a1a1a, #2a2a2a, #1a1a1a);
-            border-left: 1px solid #333;
         }
 
-        /* --- PAINEL (Mantido) --- */
-        #admin-panel {
-            display: none; background: #151515; padding: 15px;
-            border-bottom: 2px solid #333; position: fixed;
-            top: 0; left: 0; right: 0; z-index: 1000;
-            max-height: 80vh; overflow-y: auto; text-align: center;
-        }
+        /* PAINEL (Mantido) */
+        #admin-panel { display: none; background: #151515; padding: 15px; position: fixed; top: 0; left: 0; right: 0; z-index: 1000; max-height: 80vh; overflow-y: auto; text-align: center; }
+        #secret-btn { width: 100%; height: 100%; opacity: 0; cursor: pointer; border: none; }
         .input-group { display: flex; gap: 8px; margin-bottom: 8px; justify-content: center; flex-wrap: wrap; }
         input, select { padding: 8px; background: #222; border: 1px solid #444; color: #eee; border-radius: 4px; }
-        
         .btn { border:none; padding:8px 15px; cursor:pointer; color:white; border-radius:4px; font-weight:bold; }
         .btn-add { background:#388E3C; }
-        .btn-undo { background:#555; }
-        .btn-close { background:#D32F2F; }
-        .btn-backup { background:#1976D2; }
-
-        #backupArea {
-            width: 90%; max-width: 600px; height: 60px;
-            background: #000; color: #0f0; font-family: monospace;
-            font-size: 10px; margin: 10px auto; display: block;
-            border: 1px solid #333; padding: 5px;
-        }
+        #backupArea { width: 90%; height: 60px; background: #000; color: #0f0; margin: 10px auto; display: block; }
     </style>
 </head>
 <body>
 
     <div id="admin-panel">
         <div class="input-group">
-            <input type="text" id="seriesName" placeholder="Título da Obra">
+            <input type="text" id="seriesName" placeholder="Título">
             <input type="number" id="volNumber" placeholder="Vol" style="width:60px">
             <select id="bookType">
-                <option value="manga">Tipo: Mangá (Padrão)</option>
-                <option value="novel">Tipo: Light Novel (Mais larga)</option>
+                <option value="manga">Mangá</option>
+                <option value="novel">Light Novel</option>
             </select>
+            <input type="text" id="imgUrl" placeholder="URL Lombada">
+            <input type="text" id="pageLink" placeholder="Link">
         </div>
         <div class="input-group">
-            <input type="text" id="imgUrl" placeholder="URL da Lombada" style="width: 250px;">
-            <input type="text" id="pageLink" placeholder="Link de Destino" style="width: 250px;">
+            <button class="btn btn-add" onclick="addBook()">Adicionar</button>
+            <button class="btn" style="background:#555" onclick="removeLast()">Desfazer</button>
+            <button class="btn" style="background:#D32F2F" onclick="togglePanel()">Fechar</button>
         </div>
-        <div class="input-group">
-            <button class="btn btn-add" onclick="addBook()">Adicionar na Estante</button>
-            <button class="btn btn-undo" onclick="removeLast()">Desfazer Último</button>
-            <button class="btn btn-close" onclick="togglePanel()">Fechar Painel</button>
-        </div>
-
-        <div style="margin-top:15px; border-top: 1px solid #333; padding-top:10px;">
-            <textarea id="backupArea" placeholder="JSON de Backup"></textarea>
-            <div class="input-group">
-                <button class="btn btn-backup" onclick="generateBackup()">Gerar Backup</button>
-                <button class="btn btn-backup" style="background: #7B1FA2;" onclick="restoreBackup()">Restaurar Backup</button>
-            </div>
-        </div>
+        <textarea id="backupArea"></textarea>
+        <button class="btn" style="background:#1976D2" onclick="generateBackup()">Gerar Backup</button>
+        <button class="btn" style="background:#7B1FA2" onclick="restoreBackup()">Restaurar</button>
     </div>
 
     <div class="furniture-wrapper">
+        <div class="shelf-top-crown"></div>
         <div class="shelf-header"></div>
         
-        <div class="library-container">
-            <div class="library-grid" id="libraryGrid"></div>
-        </div>
+        <div class="library-container" id="libraryContainer">
+            </div>
 
         <div class="shelf-footer">
             <button id="secret-btn" onclick="togglePanel()"></button>
@@ -203,19 +162,12 @@
     <script>
         const COLUMNS = 5;
         const SHELVES = 6;
-        const PX_CM = 4.8;
-        const FILLER_COLORS = ['#1a1a1a', '#222', '#1e1e1e', '#252525'];
-
-        const WIDTHS = {
-            manga: 1.6,
-            novel: 2.4
-        };
-
+        const PX_CM = 4.8; 
         let myBooks = JSON.parse(localStorage.getItem('myMangaLibrary_v3')) || [];
 
         function init() {
-            const grid = document.getElementById('libraryGrid');
-            grid.innerHTML = '';
+            const container = document.getElementById('libraryContainer');
+            container.innerHTML = '';
             for (let c = 0; c < COLUMNS; c++) {
                 const col = document.createElement('div');
                 col.className = 'library-column';
@@ -225,69 +177,14 @@
                     shelf.id = `s-${c}-${s}`;
                     col.appendChild(shelf);
                 }
-                grid.appendChild(col);
+                container.appendChild(col);
             }
             render();
         }
 
-        function addBook() {
-            const series = document.getElementById('seriesName').value.trim();
-            const vol = document.getElementById('volNumber').value;
-            const img = document.getElementById('imgUrl').value.trim();
-            const type = document.getElementById('bookType').value;
-            
-            if(!series || !img) return alert("Título e Imagem obrigatórios");
-
-            const fixedW = WIDTHS[type];
-            const randomH = (Math.random() * (20.5 - 18.5) + 18.5).toFixed(2);
-            
-            myBooks.push({
-                series, 
-                vol: vol ? parseFloat(vol) : 0, 
-                url: img,
-                link: document.getElementById('pageLink').value,
-                w: fixedW, 
-                h: parseFloat(randomH),
-                type: type
-            });
-            
-            save();
-            document.getElementById('seriesName').value = '';
-            document.getElementById('volNumber').value = '';
-            document.getElementById('imgUrl').value = '';
-        }
-
-        function togglePanel() {
-            const p = document.getElementById('admin-panel');
-            p.style.display = p.style.display === 'block' ? 'none' : 'block';
-        }
-
-        function removeLast() { if(confirm("Remover último livro?")) { myBooks.pop(); save(); } }
-        function save() { localStorage.setItem('myMangaLibrary_v3', JSON.stringify(myBooks)); render(); }
-        
-        function generateBackup() {
-            const area = document.getElementById('backupArea');
-            area.value = JSON.stringify(myBooks);
-            area.select();
-        }
-
-        function restoreBackup() {
-            try {
-                const imported = JSON.parse(document.getElementById('backupArea').value);
-                if(Array.isArray(imported)) { myBooks = imported; save(); alert("Restaurado!"); }
-            } catch(e) { alert("Erro no JSON"); }
-        }
-
         function render() {
             document.querySelectorAll('.shelf-row').forEach(s => s.innerHTML = '');
-            
-            myBooks.sort((a, b) => {
-                const nameA = a.series.toLowerCase();
-                const nameB = b.series.toLowerCase();
-                if (nameA < nameB) return -1;
-                if (nameA > nameB) return 1;
-                return a.vol - b.vol;
-            });
+            myBooks.sort((a,b) => a.series.localeCompare(b.series) || a.vol - b.vol);
 
             let bookIdx = 0;
             for (let c = 0; c < COLUMNS; c++) {
@@ -307,11 +204,12 @@
                         } else break;
                     }
 
-                    while (usedWidth < maxWidth - 5) {
+                    // Fillers (Livros genéricos)
+                    while (usedWidth < maxWidth - 10) {
                         const rndW = 1.2 + Math.random() * 0.8;
                         const wPx = rndW * PX_CM;
                         if (usedWidth + wPx <= maxWidth) {
-                            shelf.appendChild(createBook({w: rndW, h: 17 + Math.random()*3}, true));
+                            shelf.appendChild(createBook({w: rndW}, true));
                             usedWidth += wPx;
                         } else break;
                     }
@@ -323,18 +221,35 @@
             const div = document.createElement('div');
             div.className = isFiller ? 'book book-filler' : 'book';
             div.style.width = `${data.w * PX_CM}px`;
-            div.style.height = `${data.h * PX_CM}px`;
             
             if(!isFiller) {
                 div.style.backgroundImage = `url(${data.url})`;
-                const volText = data.vol > 0 ? ` #${data.vol}` : '';
-                div.title = `${data.series}${volText}`;
-                if(data.link) div.onclick = () => window.open(data.link, '_blank');
+                div.title = data.series;
+                div.onclick = () => data.link && window.open(data.link, '_blank');
             } else {
-                div.style.backgroundColor = FILLER_COLORS[Math.floor(Math.random()*FILLER_COLORS.length)];
+                div.style.backgroundColor = "#1a1a1a";
+                div.style.height = `${70 + Math.random() * 20}%`;
             }
             return div;
         }
+
+        function addBook() {
+            const series = document.getElementById('seriesName').value;
+            const img = document.getElementById('imgUrl').value;
+            if(!series || !img) return;
+            myBooks.push({
+                series, vol: document.getElementById('volNumber').value || 0,
+                url: img, link: document.getElementById('pageLink').value,
+                w: document.getElementById('bookType').value === 'manga' ? 1.6 : 2.4
+            });
+            save();
+        }
+
+        function togglePanel() { const p = document.getElementById('admin-panel'); p.style.display = p.style.display === 'block' ? 'none' : 'block'; }
+        function removeLast() { if(confirm("Remover?")) { myBooks.pop(); save(); } }
+        function save() { localStorage.setItem('myMangaLibrary_v3', JSON.stringify(myBooks)); render(); }
+        function generateBackup() { document.getElementById('backupArea').value = JSON.stringify(myBooks); }
+        function restoreBackup() { try { myBooks = JSON.parse(document.getElementById('backupArea').value); save(); } catch(e){alert("Erro!");} }
 
         window.onload = init;
         window.onresize = render;

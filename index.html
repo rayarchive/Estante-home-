@@ -224,7 +224,6 @@
     <div id="admin-panel">
         <div class="input-group">
             <input type="text" id="seriesName" placeholder="Título">
-            <input type="number" id="volNumber" placeholder="Vol" style="width:60px">
             <select id="bookType">
                 <option value="manga">Mangá</option>
                 <option value="novel">Light Novel</option>
@@ -279,7 +278,8 @@
 
         function render() {
             document.querySelectorAll('.shelf-row').forEach(s => s.innerHTML = '');
-            myBooks.sort((a,b) => a.series.localeCompare(b.series) || a.vol - b.vol);
+            // Ordenação apenas alfabética por série
+            myBooks.sort((a,b) => a.series.localeCompare(b.series));
 
             let bookIdx = 0;
             for (let c = 0; c < COLUMNS; c++) {
@@ -293,6 +293,7 @@
                     const paddingRight = parseFloat(shelfStyle.paddingRight) || 0;
                     const maxWidth = shelf.clientWidth - paddingLeft - paddingRight;
                     let usedWidth = 0;
+                    let hasRealBooks = false; // Flag para controlar se há livros reais
 
                     // Adiciona livros reais
                     while (bookIdx < myBooks.length) {
@@ -304,23 +305,25 @@
                             shelf.appendChild(createBook(b, false));
                             usedWidth += wPx + margin;
                             bookIdx++;
+                            hasRealBooks = true;
                         } else break;
                     }
 
-                    // Preenche o resto com livros genéricos (fillers)
-                    const margin = 1; // margin-right dos livros
+                    // Preenche o resto com livros genéricos
+                    const margin = 1;
                     
                     while (usedWidth < maxWidth) {
                         const remainingSpace = maxWidth - usedWidth;
                         
-                        // Se o espaço restante é muito pequeno (menos de 4px), para
-                        if (remainingSpace < 4) {
+                        // Se o espaço restante é muito pequeno (menos de 10px), para
+                        if (remainingSpace < 10) {
                             break;
                         }
                         
                         let rndW;
-                        const minWidth = 0.6 * PX_CM; // Livros mais finos possíveis
-                        const maxFillerWidth = 2.5 * PX_CM;
+                        // Se há livros reais, usa tamanhos mais próximos dos reais
+                        const minWidth = hasRealBooks ? 1.2 * PX_CM : 0.6 * PX_CM;
+                        const maxFillerWidth = hasRealBooks ? 2.8 * PX_CM : 2.5 * PX_CM;
                         
                         if (remainingSpace <= minWidth + margin) {
                             // Espaço muito pequeno, para de adicionar
@@ -329,8 +332,14 @@
                             // Usa quase todo o espaço restante (deixa só a margem)
                             rndW = (remainingSpace - margin) / PX_CM;
                         } else {
-                            // Gera largura aleatória com mais variação
-                            rndW = 0.6 + Math.random() * 1.9; // Entre 0.6 e 2.5 cm
+                            // Gera largura aleatória
+                            if (hasRealBooks) {
+                                // Com livros reais: tamanhos similares aos mangás/novels
+                                rndW = 1.2 + Math.random() * 1.6; // Entre 1.2 e 2.8 cm
+                            } else {
+                                // Sem livros reais: mais variação
+                                rndW = 0.6 + Math.random() * 1.9; // Entre 0.6 e 2.5 cm
+                            }
                         }
                         
                         const wPx = rndW * PX_CM;
@@ -371,9 +380,11 @@
             const img = document.getElementById('imgUrl').value;
             if(!series || !img) return;
             myBooks.push({
-                series, vol: document.getElementById('volNumber').value || 0,
-                url: img, link: document.getElementById('pageLink').value,
-                w: document.getElementById('bookType').value === 'manga' ? 1.6 : 2.4
+                series,
+                url: img, 
+                link: document.getElementById('pageLink').value,
+                // Mangá: 1.3-1.5cm | Light Novel: 2.0-2.5cm
+                w: document.getElementById('bookType').value === 'manga' ? 1.3 + Math.random() * 0.2 : 2.0 + Math.random() * 0.5
             });
             save();
         }

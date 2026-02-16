@@ -116,8 +116,6 @@
             transition: transform 0.2s;
             cursor: pointer; 
             flex-shrink: 0;
-            /* Altura baseada na prateleira atual */
-            height: 85%;
         }
         .book:hover { transform: scale(1.1) translateY(-5px); z-index: 10; }
         .book-filler {
@@ -202,27 +200,59 @@
                 for (let s = 0; s < SHELVES; s++) {
                     const shelf = document.getElementById(`s-${c}-${s}`);
                     if(!shelf) continue;
-                    let maxWidth = shelf.clientWidth;
+                    
+                    // Calcula o espaço disponível considerando padding
+                    const shelfStyle = window.getComputedStyle(shelf);
+                    const paddingLeft = parseFloat(shelfStyle.paddingLeft) || 0;
+                    const paddingRight = parseFloat(shelfStyle.paddingRight) || 0;
+                    const maxWidth = shelf.clientWidth - paddingLeft - paddingRight;
                     let usedWidth = 0;
 
+                    // Adiciona livros reais
                     while (bookIdx < myBooks.length) {
                         const b = myBooks[bookIdx];
                         const wPx = b.w * PX_CM;
-                        if (usedWidth + wPx <= maxWidth) {
+                        const margin = 1; // margin-right do livro
+                        
+                        if (usedWidth + wPx + margin <= maxWidth) {
                             shelf.appendChild(createBook(b, false));
-                            usedWidth += wPx;
+                            usedWidth += wPx + margin;
                             bookIdx++;
                         } else break;
                     }
 
-                    // Fillers (Livros genéricos)
-                    while (usedWidth < maxWidth - 10) {
-                        const rndW = 1.2 + Math.random() * 0.8;
+                    // Preenche o resto com livros genéricos (fillers)
+                    const safetyMargin = 2; // Margem reduzida
+                    while (usedWidth < maxWidth - safetyMargin) {
+                        const remainingSpace = maxWidth - usedWidth - safetyMargin;
+                        
+                        // Calcula largura do filler baseado no espaço restante
+                        let rndW;
+                        const minWidth = 0.8 * PX_CM;
+                        const maxFillerWidth = 2.5 * PX_CM;
+                        
+                        if (remainingSpace < minWidth) {
+                            // Espaço muito pequeno, para de adicionar
+                            break;
+                        } else if (remainingSpace < maxFillerWidth) {
+                            // Usa o espaço restante exato
+                            rndW = remainingSpace / PX_CM;
+                        } else {
+                            // Gera largura aleatória com mais variação
+                            rndW = 0.8 + Math.random() * 1.7; // Entre 0.8 e 2.5 cm
+                        }
+                        
                         const wPx = rndW * PX_CM;
-                        if (usedWidth + wPx <= maxWidth) {
+                        const margin = 1;
+                        
+                        // Verifica se cabe com margem de segurança
+                        if (usedWidth + wPx + margin <= maxWidth - safetyMargin) {
                             shelf.appendChild(createBook({w: rndW}, true));
-                            usedWidth += wPx;
-                        } else break;
+                            usedWidth += wPx + margin;
+                        } else {
+                            // Se não cabe, para de adicionar
+                            break;
+                        }
                     }
                 }
             }
@@ -237,9 +267,12 @@
                 div.style.backgroundImage = `url(${data.url})`;
                 div.title = data.series;
                 div.onclick = () => data.link && window.open(data.link, '_blank');
+                // Variação sutil na altura dos livros reais
+                div.style.height = `${82 + Math.random() * 8}%`; // Entre 82% e 90%
             } else {
                 div.style.backgroundColor = "#1a1a1a";
-                div.style.height = `${70 + Math.random() * 20}%`;
+                // Maior variação de altura para livros genéricos
+                div.style.height = `${65 + Math.random() * 30}%`; // Entre 65% e 95%
             }
             return div;
         }
